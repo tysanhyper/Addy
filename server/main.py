@@ -23,6 +23,8 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logging.getLogger('websockets.server').setLevel(logging.WARNING)
 logging.getLogger('websockets.asyncio.server').setLevel(logging.WARNING)
+logging.getLogger('websockets.server').disabled = True
+logging.getLogger('websockets.asyncio.server').disabled = True
 
 # Configuration
 STT_MODEL_SIZE = "base"
@@ -278,7 +280,6 @@ async def handle_client(websocket):
         if client_id:
             print(f"Client {client_id} disconnected")
     except Exception as e:
-        # Only log if it's not a handshake error
         if not isinstance(e, (websockets.exceptions.InvalidMessage, EOFError)):
             print(f"Connection error: {e}")
     
