@@ -20,4 +20,4 @@ ENV PYTHONDONTWRITEBYTECODE=1
 
 EXPOSE 7860
 
-CMD ["sh", "-c", "uv run main.py"]
+CMD ["sh", "-c", "python", "main.py"]
