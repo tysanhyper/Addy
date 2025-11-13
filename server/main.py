@@ -14,8 +14,9 @@ from datetime import datetime
 from markdown import markdown
 from bs4 import BeautifulSoup
 from google.genai import types
-from collections import defaultdict, deque
+from websockets.http import Headers
 from faster_whisper import WhisperModel
+from collections import defaultdict, deque
 
 # Configuration
 STT_MODEL_SIZE = "base"
@@ -37,6 +38,8 @@ tts_voice = PiperVoice.load(f"{os.getcwd()}/{TTS_MODEL}")
 stt_model = WhisperModel(STT_MODEL_SIZE, device="cpu", compute_type="int8")
 llm_client = genai.Client()
 print("Models loaded successfully!")
+
+
 
 clients = set()
 audio_buffers = defaultdict(io.BytesIO)
@@ -105,10 +108,12 @@ def generate_response(query, client_id):
         print(f"Unexpected error during LLM generation: {e}")
         return "I'm so sorry, but I'm kinda busy right now."
 
+
 def convert_to_speech(text, output_file):
     """Convert text to speech and save as WAV"""
     with wave.open(output_file, "wb") as wav_file:
         tts_voice.synthesize_wav(text, wav_file)
+
 
 async def send_to_clients(message):
     for ws in clients.copy():
@@ -116,6 +121,7 @@ async def send_to_clients(message):
             await ws.send(message)
         except:
             clients.remove(ws)
+
 
 async def stream_audio(websocket, file_path):
     message, samplerate = sf.read(file_path, dtype='float32')
@@ -139,6 +145,7 @@ async def stream_audio(websocket, file_path):
         await asyncio.sleep(CHUNK_SIZE / SAMPLE_RATE)
     
     await websocket.send("Done playing dawg")
+
 
 async def process_and_stream_audio(websocket, input_filename, client_id):
     """Process audio message through STT -> LLM -> TTS pipeline"""
@@ -187,16 +194,26 @@ async def process_and_stream_audio(websocket, input_filename, client_id):
             os.unlink(temp_output_path)
 
 
+async def process_request(connection, request):
+    """Handle non-WebSocket HTTP requests (health checks, etc.)"""
+    if request.path == "/healthz":
+        return connection.respond(200, "OK\n")
+
+    if "Upgrade" not in request.headers:
+        print(f"Non-WebSocket request on {request.path}")
+        return connection.respond(200, "This is a WebSocket endpoint.\n")
+
+
 async def handle_client(websocket):
     """Handle WebSocket client connection"""
-    client_id = id(websocket)
-    clients.add(websocket)
-    audio_buffers[client_id] = io.BytesIO()
-    
-    remote_addr = websocket.remote_address if hasattr(websocket, 'remote_address') else "unknown"
-    print(f"Client {client_id} connected from {remote_addr}")
-    
     try:
+        client_id = id(websocket)
+        clients.add(websocket)
+        audio_buffers[client_id] = io.BytesIO()
+        
+        remote_addr = websocket.remote_address if hasattr(websocket, 'remote_address') else "unknown"
+        print(f"Client {client_id} connected from {remote_addr}")
+        
         async for message in websocket:
             try:
                 if isinstance(message, bytes):
@@ -250,7 +267,7 @@ async def handle_client(websocket):
     except websockets.exceptions.ConnectionClosed:
         print(f"Client {client_id} disconnected")
     except Exception as e:
-        print(f"Connection error for client {client_id}: {e}")
+        print(f"Connection error: {e}")
     
     finally:
         clients.discard(websocket)
@@ -267,7 +284,8 @@ async def main():
         WEBSOCKET_PORT,
         ping_interval=20,           
         ping_timeout=10,            
-        max_size=10*1024*1024  
+        max_size=10*1024*1024,  
+        process_request=process_request
     ):
         print("Server is running. Press Ctrl+C to stop.")
         await asyncio.Future()
