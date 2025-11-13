@@ -210,6 +210,12 @@ async def process_request(connection, request):
 
 async def handle_client(websocket):
     """Handle WebSocket client connection"""
+    path = websocket.request.path
+    
+    if path != "/ws":
+        await websocket.close(1008, "Invalid path")
+        return
+
     client_id = None
     try:
         client_id = id(websocket)
