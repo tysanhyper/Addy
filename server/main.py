@@ -17,6 +17,12 @@ from google.genai import types
 from websockets.http import Headers
 from faster_whisper import WhisperModel
 from collections import defaultdict, deque
+import logging
+
+
+logging.basicConfig(level=logging.INFO)
+logging.getLogger('websockets.server').setLevel(logging.WARNING)
+logging.getLogger('websockets.asyncio.server').setLevel(logging.WARNING)
 
 # Configuration
 STT_MODEL_SIZE = "base"
@@ -199,12 +205,12 @@ async def process_request(connection, request):
         return connection.respond(200, "OK\n")
 
     if "Upgrade" not in request.headers:
-        print(f"Non-WebSocket request on {request.path}")
-        return connection.respond(200, "This is a WebSocket endpoint.\n")
+        return connection.respond(200, "WebSocket endpoint\n")
 
 
 async def handle_client(websocket):
     """Handle WebSocket client connection"""
+    client_id = None
     try:
         client_id = id(websocket)
         clients.add(websocket)
@@ -263,15 +269,24 @@ async def handle_client(websocket):
                     pass
     
     except websockets.exceptions.ConnectionClosed:
-        print(f"Client {client_id} disconnected")
+        if client_id:
+            print(f"Client {client_id} disconnected")
     except Exception as e:
-        print(f"Connection error: {e}")
+        # Only log if it's not a handshake error
+        if not isinstance(e, (websockets.exceptions.InvalidMessage, EOFError)):
+            print(f"Connection error: {e}")
     
     finally:
-        clients.discard(websocket)
-        if client_id in conversation_histories:
-            del conversation_histories[client_id]
-        print(f"Connection closed for client {client_id}")
+        if client_id:
+            clients.discard(websocket)
+            if client_id in conversation_histories:
+                del conversation_histories[client_id]
+            if client_id in audio_buffers:
+                try:
+                    audio_buffers[client_id].close()
+                except:
+                    pass
+                del audio_buffers[client_id]
 
 
 async def main():
@@ -282,8 +297,9 @@ async def main():
         WEBSOCKET_PORT,
         ping_interval=20,           
         ping_timeout=10,            
-        max_size=10*1024*1024,  
-        process_request=process_request
+        max_size=10*1024*1024,
+        process_request=process_request,
+        logger=logging.getLogger('websockets.server')
     ):
         print("Server is running. Press Ctrl+C to stop.")
         await asyncio.Future()
