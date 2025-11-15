@@ -179,7 +179,7 @@ See [LICENSE](./LICENSE) for details.
 ## Acknowledgements
 
 - [Weslei Prudencio for Project Inspiration](https://github.com/wprudencio)
-- [Whisper by OpenAI](https://github.com/openai/whisper)
+- [Faster Whisper by Systran](https://github.com/systran/faster-whisper)
 - [Piper TTS by Rhasspy](https://github.com/rhasspy/piper)
 - [Gemini API by Google](https://ai.google.dev/)
 - [ESP-IDF & Arduino Core](https://github.com/espressif/arduino-esp32)
