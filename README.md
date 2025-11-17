@@ -4,20 +4,46 @@
 </div>
 <br>
 
+
 # ESP32 based Voice Assistant
 
----
-
-## Overview
-
-This project combines **embedded system** and **AI inference** to create an end-to-end conversational experience.
-The **ESP32** handles real-time audio capture and playback, while the Python based server performs:
-
-- **Speech-to-Text (STT)** using Faster sWhisper
-- **Language Understanding** via Google Gemini
-- **Text-to-Speech (TTS)** using Piper TTS
-
----
+<table style="width:100%; border-collapse:collapse; table-layout:fixed; font-family:system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;">
+  <thead>
+    <tr>
+      <th style="width:50%; text-align:left; padding:12px; border-bottom:2px solid #e6e6e6; font-size:1.05rem;">
+        Overview
+      </th>
+      <th style="width:50%; text-align:left; padding:12px; border-bottom:2px solid #e6e6e6; font-size:1.05rem;">
+        YouTube Video
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="width:50%; padding:12px; vertical-align:top; line-height:1.5;">
+        <strong>This project</strong> combines <strong>embedded systems</strong> and 
+        <strong>AI inference</strong> to create an end-to-end conversational assistant.
+        The <strong>ESP32</strong> handles real-time audio recording and playback, while a 
+        Python backend performs:
+        <ul style="margin:8px 0 0 20px; padding:0;">
+          <li><strong>Speech-to-Text (STT)</strong> via Faster-Whisper</li>
+          <li><strong>Language Understanding</strong> via Google Gemini</li>
+          <li><strong>Text-to-Speech (TTS)</strong> using Piper TTS</li>
+        </ul>
+      </td>
+      <td style="width:50%; padding:12px; vertical-align:top;">
+        <a href="https://youtu.be/_BZOLwxb_aU" target="_blank" rel="noopener noreferrer">
+          <img 
+            src="https://github.com/user-attachments/assets/5e38127b-c022-445c-bea9-2c8abad6c8a0" 
+            alt="YouTube demo thumbnail"
+            width="100%" 
+            style="border-radius:6px; box-shadow:0 6px 18px rgba(0,0,0,0.08);" 
+          />
+        </a>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 ## System Architecture
 
@@ -68,16 +94,12 @@ flowchart TD
 
 The hardware supports **half-duplex streaming**, recording speech, sending it to the backend, waiting for a response and then playing it back via DAC.
 
----
-
 ## Schematic
 
 <div align="center">
   <img src="./schematic/schematic.png" width="720" alt="Logo"/>
 </div>
 <br>
-
----
 
 ## Hardware Workflow
 
@@ -91,8 +113,6 @@ The hardware supports **half-duplex streaming**, recording speech, sending it to
 
 4. **Response Playback**, The server streams 8-bit PCM chunks back to ESP32 for DAC output.
 5. **User Hears AI Voice**, LM386 amplifier drives the speaker.
-
----
 
 ## AI Backend (Python Server)
 
@@ -119,8 +139,6 @@ The **AI backend** acts as the brain of the device, hosted locally or on a VPS. 
    Piper TTS generates smooth, low-latency speech from text.
 5. **Audio Encoding**
    Output audio is converted to 8-bit unsigned PCM and streamed back to the ESP32.
-
----
 
 ## Server Setup
 
@@ -149,8 +167,6 @@ docker run -p 7860:7860 esp32-ws-server
 > Model can be download using the following command:
 > `python -m piper.download_voices en_US-libritts_r-medium --data-dir tts_models`
 
----
-
 ## System Highlights
 
 - 🎧 **End-to-end Voice Interaction**, Speak → Understand → Reply → Speak
@@ -160,21 +176,15 @@ docker run -p 7860:7860 esp32-ws-server
 - 🧠 **LLM Personality Control**, Adjustable system prompt to alter the AI’s character
 - 🔄 **Auto-Restart Watchdog**, `watcher.py` ensures uptime even after failure
 
----
-
 ## Final Outcome
 
 |<img width="600" height="800" alt="image" src="https://github.com/user-attachments/assets/e5d826f8-3a50-4bc4-a6a4-b133107e7321" />|<img width="600" height="800" alt="image" src="https://github.com/user-attachments/assets/fdc16f0d-e3f0-4859-8212-c5035583026f" />|<img width="600" height="800" alt="image" src="https://github.com/user-attachments/assets/bf4506c5-c9bd-486e-b26c-7809b7ca1098" />|
 |-|-|-|
 
----
-
 ## License
 
 This project is released under the **MIT License**.
 See [LICENSE](./LICENSE) for details.
-
----
 
 ## Acknowledgements
 
