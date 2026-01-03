@@ -176,18 +176,6 @@ docker run -p 7860:7860 esp32-ws-server
 - 🧠 **LLM Personality Control**, Adjustable system prompt to alter the AI’s character
 - 🔄 **Auto-Restart Watchdog**, `watcher.py` ensures uptime even after failure
 
-## Final Outcome
-
-|<img width="600" height="800" alt="image" src="https://github.com/user-attachments/assets/e5d826f8-3a50-4bc4-a6a4-b133107e7321" />|<img width="600" height="800" alt="image" src="https://github.com/user-attachments/assets/fdc16f0d-e3f0-4859-8212-c5035583026f" />|<img width="600" height="800" alt="image" src="https://github.com/user-attachments/assets/bf4506c5-c9bd-486e-b26c-7809b7ca1098" />|
-|-|-|-|
-
-## License
-
-This project is released under the **MIT License**.
-See [LICENSE](./LICENSE) for details.
-
-## Acknowledgements
-
 - [Weslei Prudencio for Project Inspiration](https://github.com/wprudencio)
 - [Faster Whisper by Systran](https://github.com/systran/faster-whisper)
 - [Piper TTS by Rhasspy](https://github.com/rhasspy/piper)
@@ -196,4 +184,4 @@ See [LICENSE](./LICENSE) for details.
 
 ---
 
-> Built with ❤️ by **Arpit Sengar**
+> Built with ❤️ by **Mridul Vaishnav**
